@@ -8,7 +8,19 @@ function DevPortfolio({ theme }) {
   const [typedText, setTypedText] = useState('')
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
   const fullText = 'Web Developer'
+  
+  // Window resize detection
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+  
+  const isMobile = windowWidth < 768
+  const isTablet = windowWidth >= 768 && windowWidth < 1024
+  const isDesktop = windowWidth >= 1024
   
   // Typing animation
   useEffect(() => {
@@ -128,7 +140,7 @@ function DevPortfolio({ theme }) {
           right: 0,
           background: scrolled ? 'rgba(10, 10, 26, 0.95)' : 'rgba(20, 30, 50, 0.8)',
           backdropFilter: 'blur(20px)',
-          padding: '15px 50px',
+          padding: isMobile ? '12px 20px' : '15px 50px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -144,7 +156,7 @@ function DevPortfolio({ theme }) {
           whileHover={{ scale: 1.05 }}
           style={{
             fontFamily: 'Orbitron, sans-serif',
-            fontSize: '1.5rem',
+            fontSize: isMobile ? '1.1rem' : '1.5rem',
             fontWeight: 700,
             color: '#06b6d4',
             cursor: 'pointer',
@@ -157,8 +169,29 @@ function DevPortfolio({ theme }) {
           AZZEDINE<span style={{ color: '#06b6d4' }}>.DEV</span>
         </motion.div>
 
-        {/* Nav Links */}
-        <div style={{ display: 'flex', gap: '10px' }}>
+        {/* Mobile Menu Button */}
+        {isMobile && (
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setMobileOpen(!mobileOpen)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#06b6d4',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              padding: '5px',
+            }}
+          >
+            {mobileOpen ? <FaTimes /> : <FaBars />}
+          </motion.button>
+        )}
+
+        {/* Nav Links - Desktop */}
+        <div style={{ 
+          display: isMobile ? 'none' : 'flex', 
+          gap: isTablet ? '5px' : '10px' 
+        }}>
           {navItems.map((item) => (
             <motion.button
               key={item.id}
@@ -169,20 +202,73 @@ function DevPortfolio({ theme }) {
               whileHover={{ scale: 1.05, background: 'rgba(6, 182, 212, 0.2)' }}
               whileTap={{ scale: 0.95 }}
               style={{
-                padding: '10px 20px',
+                padding: isTablet ? '8px 12px' : '10px 20px',
                 borderRadius: '25px',
                 border: 'none',
                 background: activeSection === item.id 
                   ? 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)'
                   : 'transparent',
                 color: activeSection === item.id ? '#fff' : '#888',
-                fontSize: '0.9rem',
+                fontSize: isTablet ? '0.8rem' : '0.9rem',
                 fontWeight: 500,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: isTablet ? '4px' : '8px',
                 transition: 'all 0.3s ease',
+                fontFamily: 'Rajdhani, sans-serif',
+              }}
+            >
+              {item.icon}
+              {!isTablet && item.label}
+            </motion.button>
+          ))}
+        </div>
+      </motion.nav>
+
+      {/* Mobile Menu Overlay */}
+      {isMobile && mobileOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          style={{
+            position: 'fixed',
+            top: '60px',
+            left: 0,
+            right: 0,
+            background: 'rgba(10, 10, 26, 0.98)',
+            backdropFilter: 'blur(20px)',
+            padding: '20px',
+            zIndex: 99,
+            borderBottom: '1px solid rgba(6, 182, 212, 0.2)',
+          }}
+        >
+          {navItems.map((item) => (
+            <motion.button
+              key={item.id}
+              onClick={() => {
+                setActiveSection(item.id)
+                setMobileOpen(false)
+                document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' })
+              }}
+              whileTap={{ scale: 0.95 }}
+              style={{
+                width: '100%',
+                padding: '15px 20px',
+                marginBottom: '10px',
+                borderRadius: '15px',
+                border: 'none',
+                background: activeSection === item.id 
+                  ? 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)'
+                  : 'rgba(255, 255, 255, 0.05)',
+                color: activeSection === item.id ? '#fff' : '#888',
+                fontSize: '1rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '15px',
                 fontFamily: 'Rajdhani, sans-serif',
               }}
             >
@@ -190,26 +276,30 @@ function DevPortfolio({ theme }) {
               {item.label}
             </motion.button>
           ))}
-        </div>
-      </motion.nav>
+        </motion.div>
+      )}
 
       {/* Main Content */}
-      <div style={{ padding: '100px 60px 40px 60px', maxWidth: '1400px', margin: '0 auto' }}>
+      <div style={{ 
+        padding: isMobile ? '80px 15px 40px 15px' : isTablet ? '90px 30px 40px 30px' : '100px 60px 40px 60px', 
+        maxWidth: '1400px', 
+        margin: '0 auto' 
+      }}>
         
         {/* Hero Section */}
-        <section id="home" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+        <section id="home" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: isMobile ? '20px 10px' : '0' }}>
           {/* Profile Image with Glow */}
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.8 }}
             style={{
-              width: '200px',
-              height: '200px',
+              width: isMobile ? '150px' : '200px',
+              height: isMobile ? '150px' : '200px',
               borderRadius: '50%',
               background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
               padding: '4px',
-              marginBottom: '30px',
+              marginBottom: isMobile ? '20px' : '30px',
               boxShadow: '0 0 60px rgba(6, 182, 212, 0.5), 0 0 100px rgba(59, 130, 246, 0.3)',
             }}
           >
@@ -230,7 +320,7 @@ function DevPortfolio({ theme }) {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
             style={{
-              fontSize: '3.5rem',
+              fontSize: isMobile ? '2rem' : isTablet ? '2.8rem' : '3.5rem',
               fontFamily: 'Orbitron, sans-serif',
               color: '#fff',
               marginBottom: '10px',
@@ -244,7 +334,7 @@ function DevPortfolio({ theme }) {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5 }}
             style={{
-              fontSize: '1.5rem',
+              fontSize: isMobile ? '1.1rem' : '1.5rem',
               color: '#888',
               marginBottom: '20px',
               fontFamily: 'Rajdhani, sans-serif',
@@ -259,11 +349,12 @@ function DevPortfolio({ theme }) {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.7 }}
             style={{
-              fontSize: '1.1rem',
+              fontSize: isMobile ? '0.9rem' : '1.1rem',
               color: '#666',
               maxWidth: '600px',
               lineHeight: 1.8,
-              marginBottom: '40px',
+              marginBottom: isMobile ? '30px' : '40px',
+              padding: isMobile ? '0 10px' : '0',
             }}
           >
             I create beautiful, responsive web experiences using modern technologies.
@@ -274,47 +365,54 @@ function DevPortfolio({ theme }) {
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.9 }}
-            style={{ display: 'flex', gap: '20px' }}
+            style={{ display: 'flex', gap: isMobile ? '10px' : '20px', flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto', padding: isMobile ? '0 20px' : '0' }}
           >
             <motion.button
               whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(6, 182, 212, 0.5)' }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
               style={{
-                padding: '15px 40px',
+                padding: isMobile ? '12px 30px' : '15px 40px',
                 borderRadius: '30px',
                 border: 'none',
                 background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
                 color: '#fff',
-                fontSize: '1rem',
+                fontSize: isMobile ? '0.9rem' : '1rem',
                 fontWeight: 600,
                 cursor: 'pointer',
                 fontFamily: 'Rajdhani, sans-serif',
+                width: isMobile ? '100%' : 'auto',
               }}
             >
               View My Work
             </motion.button>
-            <motion.button
+            <motion.a
+              href="/cv.pdf"
+              download
               whileHover={{ scale: 1.05, background: 'rgba(6, 182, 212, 0.1)' }}
               whileTap={{ scale: 0.95 }}
               style={{
-                padding: '15px 40px',
+                padding: isMobile ? '12px 30px' : '15px 40px',
                 borderRadius: '30px',
                 border: '2px solid #06b6d4',
                 background: 'transparent',
                 color: '#06b6d4',
-                fontSize: '1rem',
+                fontSize: isMobile ? '0.9rem' : '1rem',
                 fontWeight: 600,
                 cursor: 'pointer',
                 fontFamily: 'Rajdhani, sans-serif',
+                textDecoration: 'none',
+                textAlign: 'center',
+                width: isMobile ? '100%' : 'auto',
               }}
             >
               Download CV
-            </motion.button>
+            </motion.a>
           </motion.div>
         </section>
 
         {/* FEATURED PROJECTS Section */}
-        <section id="projects" style={{ paddingTop: '100px', paddingBottom: '60px' }}>
+        <section id="projects" style={{ paddingTop: isMobile ? '60px' : '100px', paddingBottom: isMobile ? '40px' : '60px' }}>
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
@@ -322,17 +420,17 @@ function DevPortfolio({ theme }) {
             style={{ textAlign: 'center', marginBottom: '50px' }}
           >
             <h2 style={{ 
-              fontSize: '2.5rem', 
+              fontSize: isMobile ? '1.8rem' : '2.5rem', 
               fontFamily: 'Orbitron, sans-serif',
               color: '#06b6d4',
               marginBottom: '10px'
             }}>
               FEATURED PROJECTS
             </h2>
-            <p style={{ color: '#666', fontSize: '1rem' }}>Check out some of my recent work</p>
+            <p style={{ color: '#666', fontSize: isMobile ? '0.9rem' : '1rem' }}>Check out some of my recent work</p>
           </motion.div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '30px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: isMobile ? '20px' : '30px' }}>
             {projects.map((project, i) => (
               <motion.div
                 key={i}
@@ -408,8 +506,8 @@ function DevPortfolio({ theme }) {
         </section>
 
         {/* Skills & Portfolio Section */}
-        <section id="skills" style={{ minHeight: '100vh', paddingTop: '100px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+        <section id="skills" style={{ minHeight: isMobile ? 'auto' : '100vh', paddingTop: isMobile ? '60px' : '100px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '20px' : '40px' }}>
             
             {/* Skills Card */}
             <motion.div
@@ -419,23 +517,25 @@ function DevPortfolio({ theme }) {
               style={{
                 background: 'rgba(20, 30, 50, 0.6)',
                 backdropFilter: 'blur(20px)',
-                borderRadius: '30px',
-                padding: '40px',
+                borderRadius: isMobile ? '20px' : '30px',
+                padding: isMobile ? '25px' : '40px',
                 border: '1px solid rgba(6, 182, 212, 0.2)',
               }}
             >
-              <h2 style={{ color: '#fff', fontSize: '1.8rem', marginBottom: '10px', fontFamily: 'Orbitron, sans-serif' }}>
+              <h2 style={{ color: '#fff', fontSize: isMobile ? '1.4rem' : '1.8rem', marginBottom: '10px', fontFamily: 'Orbitron, sans-serif' }}>
                 My <span style={{ color: '#06b6d4' }}>Skills</span>
               </h2>
-              <p style={{ color: '#666', marginBottom: '30px', fontSize: '0.9rem' }}>
+              <p style={{ color: '#666', marginBottom: isMobile ? '20px' : '30px', fontSize: isMobile ? '0.85rem' : '0.9rem' }}>
                 I'm a passionate web developer with over 3 years of experience creating modern, responsive web applications.
               </p>
               
-              <div style={{ display: 'flex', gap: '30px' }}>
+              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '20px' : '30px' }}>
                 {/* Skills illustration */}
-                <div style={{ width: '150px', height: '150px', background: 'rgba(6, 182, 212, 0.1)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <FaCode style={{ fontSize: '60px', color: '#06b6d4' }} />
-                </div>
+                {!isMobile && (
+                  <div style={{ width: '150px', height: '150px', background: 'rgba(6, 182, 212, 0.1)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <FaCode style={{ fontSize: '60px', color: '#06b6d4' }} />
+                  </div>
+                )}
                 
                 {/* Progress bars */}
                 <div style={{ flex: 1 }}>
@@ -517,25 +617,25 @@ function DevPortfolio({ theme }) {
         </section>
 
         {/* Certificates Section */}
-        <section id="certificates" style={{ paddingTop: '100px', paddingBottom: '60px' }}>
+        <section id="certificates" style={{ paddingTop: isMobile ? '60px' : '100px', paddingBottom: isMobile ? '40px' : '60px' }}>
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
-            style={{ textAlign: 'center', marginBottom: '50px' }}
+            style={{ textAlign: 'center', marginBottom: isMobile ? '30px' : '50px' }}
           >
             <h2 style={{ 
-              fontSize: '2.5rem', 
+              fontSize: isMobile ? '1.6rem' : '2.5rem', 
               fontFamily: 'Orbitron, sans-serif',
               color: '#06b6d4',
               marginBottom: '10px'
             }}>
               CERTIFICATES & COURSES
             </h2>
-            <p style={{ color: '#666', fontSize: '1rem' }}>My professional certifications and completed courses</p>
+            <p style={{ color: '#666', fontSize: isMobile ? '0.9rem' : '1rem' }}>My professional certifications and completed courses</p>
           </motion.div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '30px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: isMobile ? '20px' : '30px' }}>
             {/* NetAcad Certificates */}
             <motion.div
               initial={{ x: -50, opacity: 0 }}
@@ -544,12 +644,12 @@ function DevPortfolio({ theme }) {
               style={{
                 background: 'rgba(20, 30, 50, 0.6)',
                 backdropFilter: 'blur(20px)',
-                borderRadius: '20px',
-                padding: '30px',
+                borderRadius: isMobile ? '15px' : '20px',
+                padding: isMobile ? '20px' : '30px',
                 border: '1px solid rgba(6, 182, 212, 0.2)',
               }}
             >
-              <h3 style={{ color: '#06b6d4', fontSize: '1.3rem', marginBottom: '20px', fontFamily: 'Orbitron, sans-serif' }}>
+              <h3 style={{ color: '#06b6d4', fontSize: isMobile ? '1rem' : '1.3rem', marginBottom: isMobile ? '15px' : '20px', fontFamily: 'Orbitron, sans-serif' }}>
                 🎓 NetAcad Certificates
               </h3>
               {certifications.filter(c => c.source === 'NetAcad').map((cert, i) => (
@@ -557,18 +657,18 @@ function DevPortfolio({ theme }) {
                   key={i}
                   whileHover={{ x: 10 }}
                   style={{ 
-                    marginBottom: '15px', 
-                    padding: '15px 20px', 
+                    marginBottom: isMobile ? '10px' : '15px', 
+                    padding: isMobile ? '12px 15px' : '15px 20px', 
                     background: 'rgba(6, 182, 212, 0.1)', 
                     borderRadius: '12px', 
                     display: 'flex', 
                     alignItems: 'center', 
-                    gap: '15px',
+                    gap: isMobile ? '10px' : '15px',
                     borderLeft: '3px solid #06b6d4'
                   }}
                 >
-                  <span style={{ fontSize: '1.5rem' }}>{cert.icon}</span>
-                  <span style={{ color: '#fff', fontSize: '1rem' }}>{cert.title}</span>
+                  <span style={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }}>{cert.icon}</span>
+                  <span style={{ color: '#fff', fontSize: isMobile ? '0.85rem' : '1rem' }}>{cert.title}</span>
                 </motion.div>
               ))}
             </motion.div>
@@ -581,12 +681,12 @@ function DevPortfolio({ theme }) {
               style={{
                 background: 'rgba(20, 30, 50, 0.6)',
                 backdropFilter: 'blur(20px)',
-                borderRadius: '20px',
-                padding: '30px',
+                borderRadius: isMobile ? '15px' : '20px',
+                padding: isMobile ? '20px' : '30px',
                 border: '1px solid rgba(6, 182, 212, 0.2)',
               }}
             >
-              <h3 style={{ color: '#06b6d4', fontSize: '1.3rem', marginBottom: '20px', fontFamily: 'Orbitron, sans-serif' }}>
+              <h3 style={{ color: '#06b6d4', fontSize: isMobile ? '1rem' : '1.3rem', marginBottom: isMobile ? '15px' : '20px', fontFamily: 'Orbitron, sans-serif' }}>
                 📚 Udemy Courses
               </h3>
               {certifications.filter(c => c.source === 'Udemy').map((cert, i) => (
@@ -594,18 +694,18 @@ function DevPortfolio({ theme }) {
                   key={i}
                   whileHover={{ x: 10 }}
                   style={{ 
-                    marginBottom: '15px', 
-                    padding: '15px 20px', 
+                    marginBottom: isMobile ? '10px' : '15px', 
+                    padding: isMobile ? '12px 15px' : '15px 20px', 
                     background: 'rgba(6, 182, 212, 0.1)', 
                     borderRadius: '12px', 
                     display: 'flex', 
                     alignItems: 'center', 
-                    gap: '15px',
+                    gap: isMobile ? '10px' : '15px',
                     borderLeft: '3px solid #3b82f6'
                   }}
                 >
-                  <span style={{ fontSize: '1.5rem' }}>{cert.icon}</span>
-                  <span style={{ color: '#fff', fontSize: '1rem' }}>{cert.title}</span>
+                  <span style={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }}>{cert.icon}</span>
+                  <span style={{ color: '#fff', fontSize: isMobile ? '0.85rem' : '1rem' }}>{cert.title}</span>
                 </motion.div>
               ))}
             </motion.div>
@@ -613,8 +713,8 @@ function DevPortfolio({ theme }) {
         </section>
 
         {/* Education & Languages Section */}
-        <section id="education" style={{ minHeight: '100vh', paddingTop: '100px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+        <section id="education" style={{ minHeight: isMobile ? 'auto' : '100vh', paddingTop: isMobile ? '60px' : '100px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '20px' : '40px' }}>
             
             {/* Education Card */}
             <motion.div
@@ -624,38 +724,38 @@ function DevPortfolio({ theme }) {
               style={{
                 background: 'rgba(20, 30, 50, 0.6)',
                 backdropFilter: 'blur(20px)',
-                borderRadius: '30px',
-                padding: '40px',
+                borderRadius: isMobile ? '20px' : '30px',
+                padding: isMobile ? '25px' : '40px',
                 border: '1px solid rgba(6, 182, 212, 0.2)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '30px' }}>
-                <FaGraduationCap style={{ color: '#06b6d4', fontSize: '24px' }} />
-                <h2 style={{ color: '#fff', fontSize: '1.8rem', fontFamily: 'Orbitron, sans-serif' }}>Education</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: isMobile ? '20px' : '30px' }}>
+                <FaGraduationCap style={{ color: '#06b6d4', fontSize: isMobile ? '20px' : '24px' }} />
+                <h2 style={{ color: '#fff', fontSize: isMobile ? '1.3rem' : '1.8rem', fontFamily: 'Orbitron, sans-serif' }}>Education</h2>
               </div>
-              <p style={{ color: '#666', marginBottom: '30px', fontSize: '0.9rem' }}>
+              <p style={{ color: '#666', marginBottom: isMobile ? '20px' : '30px', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>
                 My learning journey and certifications
               </p>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '20px' : '30px' }}>
                 <div>
-                  <h3 style={{ color: '#06b6d4', marginBottom: '20px', fontSize: '1rem' }}>📚 Education</h3>
+                  <h3 style={{ color: '#06b6d4', marginBottom: isMobile ? '15px' : '20px', fontSize: isMobile ? '0.9rem' : '1rem' }}>📚 Education</h3>
                   {education.map((edu, i) => (
-                    <div key={i} style={{ marginBottom: '20px', padding: '15px', background: 'rgba(0,0,0,0.2)', borderRadius: '15px', borderLeft: '3px solid #06b6d4' }}>
-                      <p style={{ color: '#fff', fontWeight: 600 }}>{edu.title}</p>
-                      <p style={{ color: '#666', fontSize: '0.85rem' }}>{edu.institution}</p>
-                      <p style={{ color: '#06b6d4', fontSize: '0.8rem' }}>{edu.year}</p>
+                    <div key={i} style={{ marginBottom: isMobile ? '15px' : '20px', padding: isMobile ? '12px' : '15px', background: 'rgba(0,0,0,0.2)', borderRadius: isMobile ? '12px' : '15px', borderLeft: '3px solid #06b6d4' }}>
+                      <p style={{ color: '#fff', fontWeight: 600, fontSize: isMobile ? '0.85rem' : '1rem' }}>{edu.title}</p>
+                      <p style={{ color: '#666', fontSize: isMobile ? '0.75rem' : '0.85rem' }}>{edu.institution}</p>
+                      <p style={{ color: '#06b6d4', fontSize: isMobile ? '0.7rem' : '0.8rem' }}>{edu.year}</p>
                     </div>
                   ))}
                 </div>
                 <div>
-                  <h3 style={{ color: '#06b6d4', marginBottom: '20px', fontSize: '1rem' }}>🏆 Certifications</h3>
-                  {certifications.map((cert, i) => (
-                    <div key={i} style={{ marginBottom: '15px', padding: '12px 15px', background: 'rgba(6, 182, 212, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '1.2rem' }}>{cert.icon}</span>
+                  <h3 style={{ color: '#06b6d4', marginBottom: isMobile ? '15px' : '20px', fontSize: isMobile ? '0.9rem' : '1rem' }}>🏆 Certifications</h3>
+                  {certifications.slice(0, isMobile ? 4 : certifications.length).map((cert, i) => (
+                    <div key={i} style={{ marginBottom: isMobile ? '10px' : '15px', padding: isMobile ? '10px 12px' : '12px 15px', background: 'rgba(6, 182, 212, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '10px' }}>
+                      <span style={{ fontSize: isMobile ? '1rem' : '1.2rem' }}>{cert.icon}</span>
                       <div>
-                        <span style={{ color: '#fff', fontSize: '0.9rem', display: 'block' }}>{cert.title}</span>
-                        <span style={{ color: '#06b6d4', fontSize: '0.7rem' }}>{cert.source}</span>
+                        <span style={{ color: '#fff', fontSize: isMobile ? '0.8rem' : '0.9rem', display: 'block' }}>{cert.title}</span>
+                        <span style={{ color: '#06b6d4', fontSize: isMobile ? '0.6rem' : '0.7rem' }}>{cert.source}</span>
                       </div>
                     </div>
                   ))}
@@ -672,27 +772,27 @@ function DevPortfolio({ theme }) {
               style={{
                 background: 'rgba(20, 30, 50, 0.6)',
                 backdropFilter: 'blur(20px)',
-                borderRadius: '30px',
-                padding: '40px',
+                borderRadius: isMobile ? '20px' : '30px',
+                padding: isMobile ? '25px' : '40px',
                 border: '1px solid rgba(6, 182, 212, 0.2)',
               }}
             >
-              <h2 style={{ color: '#fff', fontSize: '1.8rem', marginBottom: '10px', fontFamily: 'Orbitron, sans-serif' }}>
+              <h2 style={{ color: '#fff', fontSize: isMobile ? '1.3rem' : '1.8rem', marginBottom: '10px', fontFamily: 'Orbitron, sans-serif' }}>
                 <span style={{ color: '#06b6d4' }}>Languages</span>
               </h2>
-              <p style={{ color: '#666', marginBottom: '40px', fontSize: '0.9rem' }}>
+              <p style={{ color: '#666', marginBottom: isMobile ? '25px' : '40px', fontSize: isMobile ? '0.8rem' : '0.9rem' }}>
                 The languages I speak and my proficiency level in each
               </p>
               
               {languages.map((lang, i) => (
-                <div key={i} style={{ marginBottom: '25px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '10px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(6, 182, 212, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#06b6d4', fontWeight: 700, fontSize: '0.8rem' }}>
+                <div key={i} style={{ marginBottom: isMobile ? '20px' : '25px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '15px', marginBottom: '10px' }}>
+                    <div style={{ width: isMobile ? '35px' : '40px', height: isMobile ? '35px' : '40px', borderRadius: '10px', background: 'rgba(6, 182, 212, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#06b6d4', fontWeight: 700, fontSize: isMobile ? '0.7rem' : '0.8rem' }}>
                       {lang.code}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <p style={{ color: '#fff', marginBottom: '5px' }}>{lang.name}</p>
-                      <div style={{ height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '10px', overflow: 'hidden' }}>
+                      <p style={{ color: '#fff', marginBottom: '5px', fontSize: isMobile ? '0.9rem' : '1rem' }}>{lang.name}</p>
+                      <div style={{ height: isMobile ? '6px' : '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '10px', overflow: 'hidden' }}>
                         <motion.div
                           initial={{ width: 0 }}
                           whileInView={{ width: `${lang.level}%` }}
@@ -719,22 +819,22 @@ function DevPortfolio({ theme }) {
         </section>
 
         {/* Contact Section */}
-        <section id="contact" style={{ paddingTop: '100px', paddingBottom: '60px' }}>
+        <section id="contact" style={{ paddingTop: isMobile ? '60px' : '100px', paddingBottom: isMobile ? '40px' : '60px' }}>
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
-            style={{ textAlign: 'center', marginBottom: '50px' }}
+            style={{ textAlign: 'center', marginBottom: isMobile ? '30px' : '50px' }}
           >
             <h2 style={{ 
-              fontSize: '2.5rem', 
+              fontSize: isMobile ? '1.8rem' : '2.5rem', 
               fontFamily: 'Orbitron, sans-serif',
               color: '#06b6d4',
               marginBottom: '10px'
             }}>
               CONTACT ME
             </h2>
-            <p style={{ color: '#666', fontSize: '1rem' }}>Get in touch with me</p>
+            <p style={{ color: '#666', fontSize: isMobile ? '0.9rem' : '1rem' }}>Get in touch with me</p>
           </motion.div>
 
           <motion.div
@@ -746,8 +846,8 @@ function DevPortfolio({ theme }) {
               margin: '0 auto',
               background: 'rgba(20, 30, 50, 0.6)',
               backdropFilter: 'blur(20px)',
-              borderRadius: '20px',
-              padding: '40px',
+              borderRadius: isMobile ? '15px' : '20px',
+              padding: isMobile ? '25px' : '40px',
               border: '1px solid rgba(6, 182, 212, 0.2)',
             }}
           >
