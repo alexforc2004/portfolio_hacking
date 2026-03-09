@@ -75,8 +75,11 @@ const cyberSecurityTopics = [
   }
 ]
 
-function CyberSecurity() {
+function CyberSecurity({ theme = 'cyber' }) {
   const cardsRef = useRef([])
+  
+  const primaryColor = theme === 'cyber' ? '#ff0033' : '#3b82f6'
+  const secondaryColor = theme === 'cyber' ? '#990000' : '#06b6d4'
 
   useEffect(() => {
     cardsRef.current.forEach((card, index) => {
@@ -116,12 +119,12 @@ function CyberSecurity() {
           fontSize: '3.5rem',
           marginBottom: '30px',
           textAlign: 'center',
-          background: 'linear-gradient(135deg, #ff0033 0%, #ffffff 100%)',
+          background: `linear-gradient(135deg, ${primaryColor} 0%, #ffffff 100%)`,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent'
         }}
       >
-        CYBERSECURITY EXPERTISE
+        {theme === 'cyber' ? 'CYBERSECURITY EXPERTISE' : 'WEB DEVELOPMENT EXPERTISE'}
       </motion.h2>
 
       <motion.p
@@ -155,12 +158,12 @@ function CyberSecurity() {
             ref={el => cardsRef.current[index] = el}
             whileHover={{ 
               y: -15,
-              boxShadow: '0 0 50px rgba(255, 0, 51, 0.6)',
-              borderColor: '#ff0033'
+              boxShadow: theme === 'cyber' ? '0 0 50px rgba(255, 0, 51, 0.6)' : '0 0 50px rgba(59, 130, 246, 0.6)',
+              borderColor: primaryColor
             }}
             style={{
               background: 'rgba(17, 17, 17, 0.8)',
-              border: '1px solid rgba(255, 0, 51, 0.3)',
+              border: theme === 'cyber' ? '1px solid rgba(255, 0, 51, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)',
               padding: '40px',
               borderRadius: '10px',
               backdropFilter: 'blur(10px)',
@@ -177,7 +180,9 @@ function CyberSecurity() {
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'linear-gradient(135deg, rgba(255, 0, 51, 0.05) 0%, transparent 100%)',
+              background: theme === 'cyber' 
+                ? 'linear-gradient(135deg, rgba(255, 0, 51, 0.05) 0%, transparent 100%)'
+                : 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%)',
               pointerEvents: 'none'
             }} />
 
@@ -185,9 +190,9 @@ function CyberSecurity() {
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{
                 fontSize: '3rem',
-                color: '#ff0033',
+                color: primaryColor,
                 marginBottom: '20px',
-                textShadow: '0 0 20px rgba(255, 0, 51, 0.5)'
+                textShadow: theme === 'cyber' ? '0 0 20px rgba(255, 0, 51, 0.5)' : '0 0 20px rgba(59, 130, 246, 0.5)'
               }}>
                 {topic.icon}
               </div>
@@ -195,7 +200,7 @@ function CyberSecurity() {
               <h3 style={{
                 fontFamily: 'Orbitron, sans-serif',
                 fontSize: '1.5rem',
-                color: '#ff0033',
+                color: primaryColor,
                 marginBottom: '15px',
                 textTransform: 'uppercase',
                 letterSpacing: '2px'
@@ -216,7 +221,7 @@ function CyberSecurity() {
                 <h4 style={{
                   fontFamily: 'Orbitron, sans-serif',
                   fontSize: '0.9rem',
-                  color: '#ff0033',
+                  color: primaryColor,
                   marginBottom: '12px',
                   textTransform: 'uppercase',
                   letterSpacing: '1px'
@@ -245,7 +250,7 @@ function CyberSecurity() {
                       <span style={{
                         position: 'absolute',
                         left: 0,
-                        color: '#ff0033',
+                        color: primaryColor,
                         fontWeight: 'bold'
                       }}>▸</span>
                       {advantage}
@@ -285,15 +290,15 @@ function CyberSecurity() {
             style={{
               textAlign: 'center',
               padding: '30px',
-              background: 'rgba(255, 0, 51, 0.05)',
-              border: '1px solid rgba(255, 0, 51, 0.3)',
+              background: theme === 'cyber' ? 'rgba(255, 0, 51, 0.05)' : 'rgba(59, 130, 246, 0.05)',
+              border: theme === 'cyber' ? '1px solid rgba(255, 0, 51, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)',
               borderRadius: '10px'
             }}
           >
             <div style={{
               fontFamily: 'Orbitron, sans-serif',
               fontSize: '2.5rem',
-              color: '#ff0033',
+              color: primaryColor,
               marginBottom: '10px',
               fontWeight: 700
             }}>

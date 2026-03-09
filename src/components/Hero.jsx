@@ -1,11 +1,13 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import gsap from 'gsap'
 import { FaGithub, FaLinkedin, FaPhone, FaEnvelope, FaShieldAlt, FaCode, FaServer } from 'react-icons/fa'
 
-function Hero() {
+function Hero({ isPlaying = false, theme = 'cyber' }) {
   const titleRef = useRef(null)
   const subtitleRef = useRef(null)
+  const [rotation, setRotation] = useState(0)
+  const [currentImage, setCurrentImage] = useState('/profile.png')
 
   useEffect(() => {
     gsap.fromTo(titleRef.current,
@@ -17,6 +19,32 @@ function Hero() {
       { opacity: 1, x: 0, duration: 1, delay: 0.5, ease: 'power3.out' }
     )
   }, [])
+
+  // Update image based on theme
+  useEffect(() => {
+    if (theme === 'dev') {
+      setCurrentImage('/mypicture2.png')
+    } else {
+      setCurrentImage(isPlaying ? '/mask.jpg' : '/profile.png')
+    }
+  }, [theme, isPlaying])
+
+  // Rotate when music plays/stops (only in cyber theme)
+  useEffect(() => {
+    if (theme === 'cyber') {
+      if (isPlaying) {
+        setRotation(prev => prev + 360)
+        setTimeout(() => {
+          setCurrentImage('/mask.jpg')
+        }, 500)
+      } else {
+        setRotation(prev => prev + 360)
+        setTimeout(() => {
+          setCurrentImage('/profile.png')
+        }, 500)
+      }
+    }
+  }, [isPlaying, theme])
 
   return (
     <section id="home" style={{
@@ -48,7 +76,7 @@ function Hero() {
             transition={{ delay: 0.3 }}
             style={{
               fontFamily: 'Share Tech Mono, monospace',
-              color: '#ff0033',
+              color: theme === 'cyber' ? '#ff0033' : '#3b82f6',
               fontSize: '1.2rem',
               marginBottom: '20px',
               display: 'flex',
@@ -56,9 +84,9 @@ function Hero() {
               gap: '10px'
             }}
           >
-            <span style={{ color: '#ff0033' }}>&lt;</span>
-            CYBERSECURITY SPECIALIST
-            <span style={{ color: '#ff0033' }}>/&gt;</span>
+            <span style={{ color: theme === 'cyber' ? '#ff0033' : '#3b82f6' }}>&lt;</span>
+            {theme === 'cyber' ? 'CYBERSECURITY SPECIALIST' : 'WEB DEVELOPER SPECIALIST'}
+            <span style={{ color: theme === 'cyber' ? '#ff0033' : '#3b82f6' }}>/&gt;</span>
           </motion.div>
 
           <h1 ref={titleRef} style={{
@@ -67,9 +95,13 @@ function Hero() {
             fontWeight: 900,
             lineHeight: 1.1,
             marginBottom: '20px',
-            background: 'linear-gradient(135deg, #ffffff 0%, #ff0033 50%, #990000 100%)',
+            background: theme === 'cyber'
+              ? 'linear-gradient(135deg, #ffffff 0%, #ff0033 50%, #990000 100%)'
+              : 'linear-gradient(135deg, #ffffff 0%, #3b82f6 50%, #06b6d4 100%)',
             WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            color: 'transparent'
           }}>
             AZZEDINE<br/>OUBAID
           </h1>
@@ -83,7 +115,9 @@ function Hero() {
             lineHeight: 1.6
           }}>
             21 Years Old | Full Stack Developer | IT Specialist | 
-            <span style={{ color: '#ff0033' }}> Cybersecurity Expert</span>
+            <span style={{ color: theme === 'cyber' ? '#ff0033' : '#3b82f6' }}>
+              {theme === 'cyber' ? ' Cybersecurity Expert' : ' Web Development Expert'}
+            </span>
           </p>
 
           {/* Stats */}
@@ -107,7 +141,7 @@ function Hero() {
                   textAlign: 'center'
                 }}
               >
-                <div style={{ color: '#ff0033', fontSize: '1.5rem', marginBottom: '5px' }}>
+                <div style={{ color: theme === 'cyber' ? '#ff0033' : '#3b82f6', fontSize: '1.5rem', marginBottom: '5px' }}>
                   {stat.icon}
                 </div>
                 <div style={{
@@ -129,11 +163,13 @@ function Hero() {
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
             <motion.a
               href="#contact"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(255, 0, 51, 0.5)' }}
+              whileHover={{ scale: 1.05, boxShadow: theme === 'cyber' ? '0 0 30px rgba(255, 0, 51, 0.5)' : '0 0 30px rgba(59, 130, 246, 0.5)' }}
               whileTap={{ scale: 0.95 }}
               style={{
                 padding: '15px 40px',
-                background: 'linear-gradient(135deg, #ff0033 0%, #990000 100%)',
+                background: theme === 'cyber' 
+                  ? 'linear-gradient(135deg, #ff0033 0%, #990000 100%)'
+                  : 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
                 border: 'none',
                 color: '#fff',
                 fontFamily: 'Orbitron, sans-serif',
@@ -142,30 +178,57 @@ function Hero() {
                 textDecoration: 'none',
                 textTransform: 'uppercase',
                 letterSpacing: '2px',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                borderRadius: theme === 'dev' ? '8px' : '0'
               }}
             >
-              Contact Me
+              {theme === 'cyber' ? 'Contact Me' : 'View My Work'}
             </motion.a>
             <motion.a
               href="#projects"
-              whileHover={{ scale: 1.05, borderColor: '#ff0033' }}
+              whileHover={{ scale: 1.05, borderColor: theme === 'cyber' ? '#ff0033' : '#3b82f6' }}
               whileTap={{ scale: 0.95 }}
               style={{
                 padding: '15px 40px',
                 background: 'transparent',
-                border: '2px solid #ff0033',
-                color: '#ff0033',
+                border: theme === 'cyber' ? '2px solid #ff0033' : '2px solid #3b82f6',
+                color: theme === 'cyber' ? '#ff0033' : '#3b82f6',
                 fontFamily: 'Orbitron, sans-serif',
                 fontSize: '0.9rem',
                 fontWeight: 600,
                 textDecoration: 'none',
                 textTransform: 'uppercase',
                 letterSpacing: '2px',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                borderRadius: theme === 'dev' ? '8px' : '0'
               }}
             >
               View Projects
+            </motion.a>
+            <motion.a
+              href="/cv.pdf"
+              download="Azzedine_Oubaid_CV.pdf"
+              whileHover={{ scale: 1.05, boxShadow: theme === 'cyber' ? '0 0 30px rgba(255, 0, 51, 0.3)' : '0 0 30px rgba(59, 130, 246, 0.3)' }}
+              whileTap={{ scale: 0.95 }}
+              style={{
+                padding: '15px 40px',
+                background: 'transparent',
+                border: theme === 'cyber' ? '2px solid #ff0033' : '2px solid #3b82f6',
+                color: theme === 'cyber' ? '#ff0033' : '#3b82f6',
+                fontFamily: 'Orbitron, sans-serif',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                textDecoration: 'none',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                cursor: 'pointer',
+                borderRadius: theme === 'dev' ? '8px' : '0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px'
+              }}
+            >
+              📄 Download CV
             </motion.a>
           </div>
 
@@ -182,7 +245,7 @@ function Hero() {
                 href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.2, color: '#ff0033' }}
+                whileHover={{ scale: 1.2, color: theme === 'cyber' ? '#ff0033' : '#3b82f6' }}
                 style={{
                   color: '#888',
                   fontSize: '1.5rem',
@@ -226,7 +289,9 @@ function Hero() {
             <div style={{
               position: 'absolute',
               inset: '-10px',
-              background: 'linear-gradient(135deg, #ff0033, #990000, #ff0033)',
+              background: theme === 'cyber' 
+                ? 'linear-gradient(135deg, #ff0033, #990000, #ff0033)'
+                : 'linear-gradient(135deg, #3b82f6, #06b6d4, #3b82f6)',
               borderRadius: '50%',
               animation: 'spin 4s linear infinite',
               filter: 'blur(20px)',
@@ -239,17 +304,20 @@ function Hero() {
               width: '100%',
               height: '100%',
               borderRadius: '50%',
-              border: '4px solid #ff0033',
+              border: theme === 'cyber' ? '4px solid #ff0033' : '4px solid #3b82f6',
               overflow: 'hidden',
-              background: '#111'
+              background: '#111',
+              transform: `rotate(${rotation}deg)`,
+              transition: 'transform 1s ease-in-out'
             }}>
               <img
-                src="/profile.png"
+                src={currentImage}
                 alt="Azzedine Oubaid"
                 style={{
                   width: '100%',
                   height: '100%',
-                  objectFit: 'cover'
+                  objectFit: 'cover',
+                  transition: 'opacity 0.3s ease'
                 }}
               />
             </div>
@@ -261,7 +329,9 @@ function Hero() {
               style={{
                 position: 'absolute',
                 inset: '-30px',
-                border: '2px dashed rgba(255, 0, 51, 0.3)',
+                border: theme === 'cyber' 
+                  ? '2px dashed rgba(255, 0, 51, 0.3)'
+                  : '2px dashed rgba(59, 130, 246, 0.3)',
                 borderRadius: '50%'
               }}
             />
@@ -273,13 +343,96 @@ function Hero() {
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
-        @media (max-width: 968px) {
+        
+        /* Tablet */
+        @media (max-width: 1024px) {
           #home > div {
             grid-template-columns: 1fr !important;
             text-align: center;
+            gap: 40px !important;
           }
           #home h1 {
-            font-size: 3rem !important;
+            font-size: 3.5rem !important;
+          }
+          #home > div > div:last-child > div {
+            width: 300px !important;
+            height: 300px !important;
+          }
+        }
+        
+        /* Large Phone */
+        @media (max-width: 768px) {
+          #home {
+            padding: 80px 4% !important;
+          }
+          #home h1 {
+            font-size: 2.5rem !important;
+          }
+          #home > div > div:last-child > div {
+            width: 250px !important;
+            height: 250px !important;
+          }
+          #home > div > div:first-child > div:nth-child(4) {
+            gap: 20px !important;
+            justify-content: center;
+          }
+        }
+        
+        /* Phone */
+        @media (max-width: 576px) {
+          #home {
+            padding: 60px 3% !important;
+          }
+          #home h1 {
+            font-size: 2rem !important;
+          }
+          #home > div > div:last-child > div {
+            width: 200px !important;
+            height: 200px !important;
+          }
+          #home > div > div:first-child > div:first-child {
+            font-size: 0.9rem !important;
+            flex-wrap: wrap;
+            justify-content: center;
+          }
+          #home > div > div:first-child > p {
+            font-size: 1rem !important;
+          }
+          #home > div > div:first-child > div:nth-child(4) {
+            gap: 15px !important;
+          }
+          #home > div > div:first-child > div:nth-child(4) > div > div:nth-child(2) {
+            font-size: 1.5rem !important;
+          }
+          #home > div > div:first-child > div:nth-child(5) {
+            flex-direction: column;
+            gap: 10px !important;
+          }
+          #home > div > div:first-child > div:nth-child(5) > a {
+            width: 100%;
+            text-align: center;
+            padding: 12px 20px !important;
+            font-size: 0.8rem !important;
+          }
+        }
+        
+        /* Mini Phone */
+        @media (max-width: 400px) {
+          #home {
+            padding: 50px 2% !important;
+          }
+          #home h1 {
+            font-size: 1.6rem !important;
+          }
+          #home > div > div:last-child > div {
+            width: 160px !important;
+            height: 160px !important;
+          }
+          #home > div > div:first-child > div:first-child {
+            font-size: 0.75rem !important;
+          }
+          #home > div > div:first-child > p {
+            font-size: 0.9rem !important;
           }
         }
       `}</style>

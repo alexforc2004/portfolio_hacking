@@ -12,6 +12,12 @@ import Contact from './components/Contact'
 import MusicPlayer from './components/MusicPlayer'
 import ThreeBackground from './components/ThreeBackground'
 import Footer from './components/Footer'
+import ChatBot from './components/ChatBot_test'
+import ThemeSwitcher from './components/ThemeSwitcher'
+import DevPortfolio from './components/DevPortfolio'
+// import Sidebar from './components/Sidebar' // Removed per user request
+import Certificates from './components/Certificates'
+import DraggableIcon from './components/DraggableIcon'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -140,6 +146,8 @@ function App() {
   const [currentTrack, setCurrentTrack] = useState(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [bassIntensity, setBassIntensity] = useState(0)
+  const [isPlaylistOpen, setIsPlaylistOpen] = useState(false)
+  const [theme, setTheme] = useState('cyber') // 'cyber' or 'dev'
   const audioRef = useRef(null)
   const audioContextRef = useRef(null)
   const analyserRef = useRef(null)
@@ -405,21 +413,44 @@ function App() {
     )
   }
 
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'cyber' ? 'dev' : 'cyber')
+  }
+
+  // Render Dev Portfolio for dev theme
+  if (theme === 'dev') {
+    return (
+      <div className="app" data-theme={theme}>
+        <DevPortfolio theme={theme} />
+        
+        {/* Theme Switcher */}
+        <ThemeSwitcher theme={theme} onToggle={toggleTheme} isPlaylistOpen={isPlaylistOpen} />
+        
+        {/* AI ChatBot */}
+        <ChatBot isPlaylistOpen={isPlaylistOpen} theme={theme} />
+      </div>
+    )
+  }
+
+  // Render Cyber Portfolio for cyber theme
   return (
-    <div className="app">
-      <ThreeBackground bassIntensity={bassIntensity} isPlaying={isPlaying} />
+    <div className="app" data-theme={theme}>
+      <ThreeBackground bassIntensity={bassIntensity} isPlaying={isPlaying} theme={theme} />
       <div className="scanlines" />
       <div className="red-overlay" />
       
-      <Navbar />
+
+      
+      <Navbar theme={theme} />
       
       <main>
-        <Hero />
-        <Skills />
-        <Projects />
-        <CyberSecurity />
-        <Experience />
-        <Contact />
+        <Hero isPlaying={isPlaying} theme={theme} />
+        <Skills theme={theme} />
+        <Projects theme={theme} />
+        <Certificates theme={theme} />
+        <CyberSecurity theme={theme} />
+        <Experience theme={theme} />
+        <Contact theme={theme} />
       </main>
       
       <MusicPlayer
@@ -433,9 +464,11 @@ function App() {
         onPrev={prevTrack}
         onDeleteTrack={deleteTrack}
         audioRef={audioRef}
+        onPlaylistToggle={setIsPlaylistOpen}
+        theme={theme}
       />
       
-      <Footer />
+      <Footer theme={theme} />
       
       {currentTrack && (
         <audio
@@ -448,6 +481,12 @@ function App() {
           onPause={() => setIsPlaying(false)}
         />
       )}
+
+      {/* Theme Switcher */}
+      <ThemeSwitcher theme={theme} onToggle={toggleTheme} isPlaylistOpen={isPlaylistOpen} />
+      
+      {/* AI ChatBot */}
+      <ChatBot isPlaylistOpen={isPlaylistOpen} theme={theme} />
     </div>
   )
 }

@@ -61,8 +61,11 @@ const experiences = [
   }
 ]
 
-function Experience() {
+function Experience({ theme = 'cyber' }) {
   const cardsRef = useRef([])
+  
+  const primaryColor = theme === 'cyber' ? '#ff0033' : '#3b82f6'
+  const secondaryColor = theme === 'cyber' ? '#990000' : '#06b6d4'
 
   useEffect(() => {
     cardsRef.current.forEach((card, index) => {
@@ -101,7 +104,7 @@ function Experience() {
           fontSize: '3.5rem',
           marginBottom: '80px',
           textAlign: 'center',
-          background: 'linear-gradient(135deg, #ff0033 0%, #ffffff 100%)',
+          background: `linear-gradient(135deg, ${primaryColor} 0%, #ffffff 100%)`,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent'
         }}
@@ -120,10 +123,10 @@ function Experience() {
           <motion.div
             key={index}
             ref={el => cardsRef.current[index] = el}
-            whileHover={{ y: -10, boxShadow: '0 0 40px rgba(255, 0, 51, 0.6)' }}
+            whileHover={{ y: -10, boxShadow: theme === 'cyber' ? '0 0 40px rgba(255, 0, 51, 0.6)' : '0 0 40px rgba(59, 130, 246, 0.6)' }}
             style={{
               background: 'rgba(17, 17, 17, 0.8)',
-              border: '1px solid rgba(255, 0, 51, 0.3)',
+              border: theme === 'cyber' ? '1px solid rgba(255, 0, 51, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)',
               padding: '40px',
               borderRadius: '10px',
               backdropFilter: 'blur(10px)',
@@ -145,7 +148,7 @@ function Experience() {
                 left: 0,
                 right: 0,
                 height: '3px',
-                background: 'linear-gradient(90deg, #ff0033, #990000)',
+                background: `linear-gradient(90deg, ${primaryColor}, ${secondaryColor})`,
                 transformOrigin: 'left'
               }}
             />
@@ -158,8 +161,8 @@ function Experience() {
             }}>
               <div style={{
                 fontSize: '2.5rem',
-                color: '#ff0033',
-                textShadow: '0 0 20px rgba(255, 0, 51, 0.5)'
+                color: primaryColor,
+                textShadow: theme === 'cyber' ? '0 0 20px rgba(255, 0, 51, 0.5)' : '0 0 20px rgba(59, 130, 246, 0.5)'
               }}>
                 {exp.icon}
               </div>
@@ -167,7 +170,7 @@ function Experience() {
                 <h3 style={{
                   fontFamily: 'Orbitron, sans-serif',
                   fontSize: '1.4rem',
-                  color: '#ff0033',
+                  color: primaryColor,
                   textTransform: 'uppercase',
                   letterSpacing: '1px',
                   margin: 0
@@ -207,7 +210,7 @@ function Experience() {
                   <span style={{
                     width: '6px',
                     height: '6px',
-                    background: '#ff0033',
+                    background: primaryColor,
                     borderRadius: '50%',
                     flexShrink: 0
                   }} />

@@ -43,16 +43,20 @@ const projects = [
     image: '/project-hijab.png'
   },
   {
-    title: 'Music Bot Telegram',
-    description: 'Telegram bot for downloading music and videos from YouTube, Instagram, TikTok, Facebook',
-    tech: ['Python', 'Telegram API', 'FFmpeg', 'Docker'],
+    title: 'Electro Services',
+    description: 'Professional electrical services website with service booking and contact forms',
+    tech: ['React', 'Node.js', 'Express', 'MongoDB'],
     link: '#',
-    image: '/project-musicbot.jpg'
+    image: '/project-electro.svg',
+    comingSoon: true
   }
 ]
 
-function Projects() {
+function Projects({ theme = 'cyber' }) {
   const projectsRef = useRef([])
+  
+  const primaryColor = theme === 'cyber' ? '#ff0033' : '#3b82f6'
+  const secondaryColor = theme === 'cyber' ? '#990000' : '#06b6d4'
 
   useEffect(() => {
     projectsRef.current.forEach((project, index) => {
@@ -92,12 +96,12 @@ function Projects() {
           fontSize: '3.5rem',
           marginBottom: '80px',
           textAlign: 'center',
-          background: 'linear-gradient(135deg, #ff0033 0%, #ffffff 100%)',
+          background: `linear-gradient(135deg, ${primaryColor} 0%, #ffffff 100%)`,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent'
         }}
       >
-        FEATURED PROJECTS
+        {theme === 'cyber' ? 'FEATURED PROJECTS' : 'MY PORTFOLIO'}
       </motion.h2>
 
       <div style={{
@@ -114,7 +118,7 @@ function Projects() {
             whileHover={{ y: -15 }}
             style={{
               background: 'rgba(17, 17, 17, 0.8)',
-              border: '1px solid rgba(255, 0, 51, 0.3)',
+              border: theme === 'cyber' ? '1px solid rgba(255, 0, 51, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)',
               borderRadius: '10px',
               overflow: 'hidden',
               backdropFilter: 'blur(10px)',
@@ -144,8 +148,30 @@ function Projects() {
               <div style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'linear-gradient(135deg, rgba(255, 0, 51, 0.2) 0%, transparent 100%)'
+                background: theme === 'cyber' 
+                  ? 'linear-gradient(135deg, rgba(255, 0, 51, 0.2) 0%, transparent 100%)'
+                  : 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, transparent 100%)'
               }} />
+              {project.comingSoon && (
+                <div style={{
+                  position: 'absolute',
+                  top: '15px',
+                  right: '15px',
+                  padding: '8px 16px',
+                  background: `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`,
+                  color: '#fff',
+                  fontFamily: 'Orbitron, sans-serif',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  borderRadius: '4px',
+                  boxShadow: theme === 'cyber' ? '0 0 20px rgba(255, 0, 51, 0.6)' : '0 0 20px rgba(59, 130, 246, 0.6)',
+                  animation: 'pulse 2s infinite'
+                }}>
+                  Coming Soon
+                </div>
+              )}
             </div>
 
             {/* Project Content */}
@@ -153,7 +179,7 @@ function Projects() {
               <h3 style={{
                 fontFamily: 'Orbitron, sans-serif',
                 fontSize: '1.5rem',
-                color: '#ff0033',
+                color: primaryColor,
                 marginBottom: '15px',
                 textTransform: 'uppercase',
                 letterSpacing: '1px'
@@ -180,9 +206,9 @@ function Projects() {
                 {project.tech.map((tech, i) => (
                   <span key={i} style={{
                     padding: '5px 12px',
-                    background: 'rgba(255, 0, 51, 0.1)',
-                    border: '1px solid rgba(255, 0, 51, 0.3)',
-                    color: '#ff0033',
+                    background: theme === 'cyber' ? 'rgba(255, 0, 51, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+                    border: theme === 'cyber' ? '1px solid rgba(255, 0, 51, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)',
+                    color: primaryColor,
                     fontSize: '0.75rem',
                     borderRadius: '3px',
                     fontFamily: 'Share Tech Mono, monospace'
@@ -197,23 +223,31 @@ function Projects() {
                 display: 'flex',
                 gap: '15px'
               }}>
-                <motion.a
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1, color: '#ff0033' }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    color: '#888',
-                    textDecoration: 'none',
-                    fontSize: '0.9rem',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  <FaExternalLinkAlt /> Live Demo
-                </motion.a>
+                {!project.comingSoon && (
+                  <motion.a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.05, boxShadow: theme === 'cyber' ? '0 0 20px rgba(255, 0, 51, 0.5)' : '0 0 20px rgba(59, 130, 246, 0.5)' }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '10px 20px',
+                      background: `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`,
+                      color: '#fff',
+                      textDecoration: 'none',
+                      fontSize: '0.85rem',
+                      fontFamily: 'Orbitron, sans-serif',
+                      fontWeight: 600,
+                      borderRadius: '5px',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <FaExternalLinkAlt /> View Demo
+                  </motion.a>
+                )}
               </div>
             </div>
           </motion.div>
@@ -224,3 +258,15 @@ function Projects() {
 }
 
 export default Projects
+
+// Add pulse animation for Coming Soon badge
+const style = document.createElement('style')
+style.textContent = `
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+  }
+`
+if (typeof document !== 'undefined') {
+  document.head.appendChild(style)
+}

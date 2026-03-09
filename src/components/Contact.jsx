@@ -6,8 +6,11 @@ import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaGithub, FaLinkedin, FaTwitter } 
 
 gsap.registerPlugin(ScrollTrigger)
 
-function Contact() {
+function Contact({ theme = 'cyber' }) {
   const contactRef = useRef(null)
+  
+  const primaryColor = theme === 'cyber' ? '#ff0033' : '#3b82f6'
+  const secondaryColor = theme === 'cyber' ? '#990000' : '#06b6d4'
 
   useEffect(() => {
     gsap.fromTo(contactRef.current,
@@ -50,7 +53,7 @@ function Contact() {
             fontSize: '3.5rem',
             marginBottom: '30px',
             textAlign: 'center',
-            background: 'linear-gradient(135deg, #ff0033 0%, #ffffff 100%)',
+            background: `linear-gradient(135deg, ${primaryColor} 0%, #ffffff 100%)`,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
           }}
@@ -110,10 +113,10 @@ function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.15 }}
               viewport={{ once: true }}
-              whileHover={{ y: -10, boxShadow: '0 0 40px rgba(255, 0, 51, 0.6)' }}
+              whileHover={{ y: -10, boxShadow: theme === 'cyber' ? '0 0 40px rgba(255, 0, 51, 0.6)' : '0 0 40px rgba(59, 130, 246, 0.6)' }}
               style={{
                 background: 'rgba(17, 17, 17, 0.8)',
-                border: '1px solid rgba(255, 0, 51, 0.3)',
+                border: theme === 'cyber' ? '1px solid rgba(255, 0, 51, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)',
                 padding: '40px',
                 borderRadius: '10px',
                 textDecoration: 'none',
@@ -124,16 +127,16 @@ function Contact() {
             >
               <div style={{
                 fontSize: '2.5rem',
-                color: '#ff0033',
+                color: primaryColor,
                 marginBottom: '15px',
-                textShadow: '0 0 20px rgba(255, 0, 51, 0.5)'
+                textShadow: theme === 'cyber' ? '0 0 20px rgba(255, 0, 51, 0.5)' : '0 0 20px rgba(59, 130, 246, 0.5)'
               }}>
                 {contact.icon}
               </div>
               <h3 style={{
                 fontFamily: 'Orbitron, sans-serif',
                 fontSize: '1.2rem',
-                color: '#ff0033',
+                color: primaryColor,
                 marginBottom: '10px',
                 textTransform: 'uppercase',
                 letterSpacing: '1px'
@@ -173,7 +176,7 @@ function Contact() {
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
-              whileHover={{ scale: 1.3, color: '#ff0033' }}
+              whileHover={{ scale: 1.3, color: primaryColor }}
               whileTap={{ scale: 0.9 }}
               style={{
                 fontSize: '2rem',
@@ -198,12 +201,12 @@ function Contact() {
         >
           <motion.a
             href="mailto:oubaidazzedine00@gmail.com"
-            whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(255, 0, 51, 0.8)' }}
+            whileHover={{ scale: 1.05, boxShadow: theme === 'cyber' ? '0 0 40px rgba(255, 0, 51, 0.8)' : '0 0 40px rgba(59, 130, 246, 0.8)' }}
             whileTap={{ scale: 0.95 }}
             style={{
               display: 'inline-block',
               padding: '20px 60px',
-              background: 'linear-gradient(135deg, #ff0033 0%, #990000 100%)',
+              background: `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`,
               border: 'none',
               color: '#fff',
               fontFamily: 'Orbitron, sans-serif',

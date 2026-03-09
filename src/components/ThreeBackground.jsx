@@ -1,13 +1,16 @@
-import React, { useRef, useMemo, useEffect } from 'react'
+import React, { useRef, useMemo, useEffect, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
-// Cube wall background - black and red theme (for when music is stopped)
-function CubeWall() {
+// Cube wall background - black and red theme (for cyber mode)
+function CubeWall({ theme = 'cyber' }) {
   const groupRef = useRef()
   const meshRefs = useRef([])
   
-  // Create a grid of cubes - black with some red ones
+  const primaryColor = theme === 'cyber' ? '#ff0033' : '#3b82f6'
+  const emissiveColor = theme === 'cyber' ? '#990000' : '#1e40af'
+  
+  // Create a grid of cubes - black with some colored ones
   const cubes = useMemo(() => {
     const cubeData = []
     const gridSize = 14
@@ -17,8 +20,8 @@ function CubeWall() {
       for (let y = 0; y < gridSize; y++) {
         // Random depth for 3D effect
         const z = Math.random() * 2.5 - 1.25
-        // Some cubes are red (about 20%)
-        const isRed = Math.random() < 0.20
+        // Some cubes are colored (about 20%)
+        const isColored = Math.random() < 0.20
         
         cubeData.push({
           position: [
@@ -26,7 +29,7 @@ function CubeWall() {
             (y - gridSize / 2) * spacing,
             z
           ],
-          isRed,
+          isColored,
           baseZ: z,
           speed: 1 + Math.random() * 1,
           rotSpeed: 0.5 + Math.random() * 0.5
@@ -67,9 +70,9 @@ function CubeWall() {
         >
           <boxGeometry args={[1, 1, 1]} />
           <meshStandardMaterial
-            color={cube.isRed ? "#ff0033" : "#1a1a1a"}
-            emissive={cube.isRed ? "#990000" : "#000000"}
-            emissiveIntensity={cube.isRed ? 0.8 : 0}
+            color={cube.isColored ? primaryColor : "#1a1a1a"}
+            emissive={cube.isColored ? emissiveColor : "#000000"}
+            emissiveIntensity={cube.isColored ? 0.8 : 0}
             metalness={0.9}
             roughness={0.2}
           />
@@ -79,21 +82,132 @@ function CubeWall() {
   )
 }
 
-// 3D Scene for when music is NOT playing - black and red theme
-function IdleScene() {
+// Floating spheres and hexagons for dev mode - modern web developer theme
+function DevShapes() {
+  const groupRef = useRef()
+  const meshRefs = useRef([])
+  
+  const primaryColor = '#3b82f6'
+  const secondaryColor = '#06b6d4'
+  const emissiveColor = '#1e40af'
+  
+  // Create floating shapes - mix of spheres, octahedrons, and torus
+  const shapes = useMemo(() => {
+    const shapeData = []
+    const count = 80
+    
+    for (let i = 0; i < count; i++) {
+      // Random position in 3D space
+      const x = (Math.random() - 0.5) * 30
+      const y = (Math.random() - 0.5) * 25
+      const z = Math.random() * 5 - 8
+      
+      // Random shape type: 0 = sphere, 1 = octahedron, 2 = torus, 3 = icosahedron
+      const shapeType = Math.floor(Math.random() * 4)
+      const isColored = Math.random() < 0.35
+      const useSecondary = Math.random() < 0.5
+      
+      shapeData.push({
+        position: [x, y, z],
+        shapeType,
+        isColored,
+        useSecondary,
+        baseY: y,
+        baseX: x,
+        speed: 0.3 + Math.random() * 0.5,
+        rotSpeed: 0.2 + Math.random() * 0.4,
+        scale: 0.3 + Math.random() * 0.7,
+        phase: Math.random() * Math.PI * 2
+      })
+    }
+    return shapeData
+  }, [])
+
+  useFrame((state) => {
+    const time = state.clock.elapsedTime
+    
+    // Gentle group rotation
+    if (groupRef.current) {
+      groupRef.current.rotation.x = Math.sin(time * 0.1) * 0.1
+      groupRef.current.rotation.y = time * 0.05
+    }
+    
+    // Individual shape animations
+    meshRefs.current.forEach((mesh, i) => {
+      if (!mesh) return
+      const shape = shapes[i]
+      
+      // Floating movement
+      mesh.position.y = shape.baseY + Math.sin(time * shape.speed + shape.phase) * 1.5
+      mesh.position.x = shape.baseX + Math.cos(time * shape.speed * 0.7 + shape.phase) * 0.8
+      
+      // Rotation
+      mesh.rotation.x = time * shape.rotSpeed
+      mesh.rotation.y = time * shape.rotSpeed * 1.3
+      mesh.rotation.z = Math.sin(time * shape.rotSpeed + i) * 0.3
+    })
+  })
+
+  const getGeometry = (shapeType) => {
+    switch(shapeType) {
+      case 0:
+        return <sphereGeometry args={[0.5, 16, 16]} />
+      case 1:
+        return <octahedronGeometry args={[0.6]} />
+      case 2:
+        return <torusGeometry args={[0.4, 0.15, 8, 16]} />
+      case 3:
+        return <icosahedronGeometry args={[0.5]} />
+      default:
+        return <sphereGeometry args={[0.5, 16, 16]} />
+    }
+  }
+
+  return (
+    <group ref={groupRef} position={[0, 0, -3]}>
+      {shapes.map((shape, i) => (
+        <mesh 
+          key={i} 
+          ref={el => meshRefs.current[i] = el}
+          position={shape.position}
+          scale={shape.scale}
+        >
+          {getGeometry(shape.shapeType)}
+          <meshStandardMaterial
+            color={shape.isColored ? (shape.useSecondary ? secondaryColor : primaryColor) : "#1a1a2e"}
+            emissive={shape.isColored ? emissiveColor : "#000000"}
+            emissiveIntensity={shape.isColored ? 0.6 : 0}
+            metalness={0.8}
+            roughness={0.3}
+            transparent={!shape.isColored}
+            opacity={shape.isColored ? 1 : 0.7}
+          />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+// 3D Scene for when music is NOT playing - theme aware
+function IdleScene({ theme = 'cyber' }) {
+  const lightColor = theme === 'cyber' ? '#ff0033' : '#3b82f6'
+  const lightColor2 = theme === 'cyber' ? '#ff0000' : '#06b6d4'
+  
   return (
     <Canvas camera={{ position: [0, 0, 18], fov: 50 }}>
-      <ambientLight intensity={0.15} />
-      <pointLight position={[10, 10, 10]} intensity={1.5} color="#ff0033" />
-      <pointLight position={[-10, -10, 5]} intensity={1} color="#ff0000" />
+      <ambientLight intensity={theme === 'cyber' ? 0.15 : 0.25} />
+      <pointLight position={[10, 10, 10]} intensity={1.5} color={lightColor} />
+      <pointLight position={[-10, -10, 5]} intensity={1} color={lightColor2} />
       <pointLight position={[0, 0, 10]} intensity={0.5} color="#ffffff" />
-      <CubeWall />
+      {theme === 'cyber' ? <CubeWall theme={theme} /> : <DevShapes />}
     </Canvas>
   )
 }
 
-function ThreeBackground({ bassIntensity = 0, isPlaying = false }) {
+function ThreeBackground({ bassIntensity = 0, isPlaying = false, theme = 'cyber' }) {
   const videoRef = useRef(null)
+  const [imageScale, setImageScale] = useState(1)
+  const [glowIntensity, setGlowIntensity] = useState(30)
   
   // Control video playback based on isPlaying
   useEffect(() => {
@@ -105,6 +219,29 @@ function ThreeBackground({ bassIntensity = 0, isPlaying = false }) {
       }
     }
   }, [isPlaying])
+  
+  // Make hoodie image pulse with bass
+  useEffect(() => {
+    if (isPlaying && bassIntensity > 0) {
+      // Scale from 1.0 to 1.15 based on bass intensity
+      const newScale = 1 + (bassIntensity * 0.15)
+      setImageScale(newScale)
+      // Glow from 30 to 80 based on bass
+      const newGlow = 30 + (bassIntensity * 50)
+      setGlowIntensity(newGlow)
+    } else {
+      setImageScale(1)
+      setGlowIntensity(30)
+    }
+  }, [bassIntensity, isPlaying])
+  
+  // Get responsive height
+  const getImageHeight = () => {
+    if (typeof window === 'undefined') return '70vh'
+    if (window.innerWidth <= 480) return '40vh'
+    if (window.innerWidth <= 768) return '50vh'
+    return '70vh'
+  }
   
   return (
     <div style={{
@@ -140,7 +277,7 @@ function ThreeBackground({ bassIntensity = 0, isPlaying = false }) {
         }}
       />
       
-      {/* Red Hoodie Hacker Image - shown in center when music is playing */}
+      {/* Red Hoodie Hacker Image - pulses with music bass */}
       <img
         src="/hoodie.png"
         alt=""
@@ -148,15 +285,16 @@ function ThreeBackground({ bassIntensity = 0, isPlaying = false }) {
           position: 'absolute',
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%)',
-          height: '70vh',
+          transform: `translate(-50%, -50%) scale(${imageScale})`,
+          height: getImageHeight(),
+          maxWidth: '90%',
           width: 'auto',
           objectFit: 'contain',
           opacity: isPlaying ? 1 : 0,
-          transition: 'opacity 0.5s ease',
+          transition: 'transform 0.05s ease-out, opacity 0.5s ease, filter 0.05s ease-out',
           zIndex: 2,
           pointerEvents: 'none',
-          filter: 'drop-shadow(0 0 30px rgba(255, 0, 0, 0.5))'
+          filter: `drop-shadow(0 0 ${glowIntensity}px rgba(255, 0, 0, ${0.5 + bassIntensity * 0.4}))`
         }}
       />
       
@@ -171,7 +309,7 @@ function ThreeBackground({ bassIntensity = 0, isPlaying = false }) {
         transition: 'opacity 0.5s ease',
         zIndex: 0
       }}>
-        <IdleScene />
+        <IdleScene theme={theme} />
       </div>
     </div>
   )

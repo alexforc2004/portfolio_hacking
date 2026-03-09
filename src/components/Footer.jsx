@@ -1,11 +1,14 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 
-function Footer() {
+function Footer({ theme = 'cyber' }) {
+  const accentColor = theme === 'cyber' ? '#ff0033' : '#3b82f6'
+  const borderColor = theme === 'cyber' ? 'rgba(255, 0, 51, 0.3)' : 'rgba(59, 130, 246, 0.3)'
+  
   return (
     <footer style={{
       background: 'rgba(0, 0, 0, 0.95)',
-      borderTop: '1px solid rgba(255, 0, 51, 0.3)',
+      borderTop: `1px solid ${borderColor}`,
       padding: '40px 5%',
       position: 'relative',
       zIndex: 2
@@ -26,22 +29,28 @@ function Footer() {
             fontSize: '0.95rem',
             marginBottom: '15px'
           }}>
-            © 2024 Azzedine Oubaid. All rights reserved.
+            © 2026 Azzedine Oubaid. All rights reserved.
           </p>
           <p style={{
             fontFamily: 'Share Tech Mono, monospace',
-            color: '#ff0033',
+            color: accentColor,
             fontSize: '0.85rem',
             letterSpacing: '1px'
           }}>
-            [ CYBERSECURITY | FULL STACK DEVELOPMENT | IT SOLUTIONS ]
+            {theme === 'cyber' 
+              ? '[ CYBERSECURITY | FULL STACK DEVELOPMENT | IT SOLUTIONS ]'
+              : '[ WEB DEVELOPMENT | FULL STACK | MODERN TECHNOLOGIES ]'
+            }
           </p>
           <p style={{
             color: '#666',
             fontSize: '0.8rem',
             marginTop: '15px'
           }}>
-            [ SYSTEM ONLINE ] [ SECURITY ACTIVE ] [ READY TO DEPLOY ]
+            {theme === 'cyber'
+              ? '[ SYSTEM ONLINE ] [ SECURITY ACTIVE ] [ READY TO DEPLOY ]'
+              : '[ PORTFOLIO ACTIVE ] [ PROJECTS READY ] [ OPEN TO WORK ]'
+            }
           </p>
         </motion.div>
       </div>

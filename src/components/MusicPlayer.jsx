@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FaPlay, FaPause, FaStepBackward, FaStepForward, FaVolumeUp, FaVolumeMute, FaMusic, FaTimes, FaPlus, FaRedo, FaRandom, FaTrash } from 'react-icons/fa'
 import AudioVisualizer from './AudioVisualizer'
 
-function MusicPlayer({ tracks, currentTrack, isPlaying, onFileImport, onPlayTrack, onTogglePlay, onNext, onPrev, onDeleteTrack, audioRef }) {
+function MusicPlayer({ tracks, currentTrack, isPlaying, onFileImport, onPlayTrack, onTogglePlay, onNext, onPrev, onDeleteTrack, audioRef, onPlaylistToggle, theme = 'cyber' }) {
   const [showPlaylist, setShowPlaylist] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(1)
@@ -11,6 +11,15 @@ function MusicPlayer({ tracks, currentTrack, isPlaying, onFileImport, onPlayTrac
   const [duration, setDuration] = useState(0)
   const [repeatMode, setRepeatMode] = useState(0) // 0: no repeat, 1: repeat all, 2: repeat one
   const [isShuffle, setIsShuffle] = useState(false)
+
+  // Notify parent when playlist is toggled
+  const handlePlaylistToggle = () => {
+    const newState = !showPlaylist
+    setShowPlaylist(newState)
+    if (onPlaylistToggle) {
+      onPlaylistToggle(newState)
+    }
+  }
 
   useEffect(() => {
     if (audioRef.current) {
@@ -48,6 +57,9 @@ function MusicPlayer({ tracks, currentTrack, isPlaying, onFileImport, onPlayTrac
       audio.removeEventListener('durationchange', updateDuration)
     }
   }, [audioRef, currentTrack])
+  
+  // Hide music player in dev mode - must be after all hooks
+  if (theme === 'dev') return null
 
   const handleFileSelect = (e) => {
     const files = e.target.files
@@ -73,9 +85,9 @@ function MusicPlayer({ tracks, currentTrack, isPlaying, onFileImport, onPlayTrac
 
   return (
     <>
-      {/* Floating Music Player Button */}
+      {/* Floating Music Player Button - Bottom Right */}
       <motion.button
-        onClick={() => setShowPlaylist(!showPlaylist)}
+        onClick={handlePlaylistToggle}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         style={{
@@ -112,10 +124,10 @@ function MusicPlayer({ tracks, currentTrack, isPlaying, onFileImport, onPlayTrac
               position: 'fixed',
               right: 0,
               top: 0,
-              width: '400px',
+              width: window.innerWidth <= 480 ? '100%' : window.innerWidth <= 768 ? '320px' : '400px',
               height: '100vh',
               background: 'rgba(10, 10, 10, 0.98)',
-              borderLeft: '2px solid rgba(255, 0, 51, 0.5)',
+              borderLeft: window.innerWidth <= 480 ? 'none' : '2px solid rgba(255, 0, 51, 0.5)',
               zIndex: 1000,
               display: 'flex',
               flexDirection: 'column',
@@ -141,7 +153,7 @@ function MusicPlayer({ tracks, currentTrack, isPlaying, onFileImport, onPlayTrac
                 PLAYLIST
               </h3>
               <motion.button
-                onClick={() => setShowPlaylist(false)}
+                onClick={handlePlaylistToggle}
                 whileHover={{ scale: 1.2, color: '#ff0033' }}
                 style={{
                   background: 'transparent',
@@ -506,7 +518,7 @@ function MusicPlayer({ tracks, currentTrack, isPlaying, onFileImport, onPlayTrac
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setShowPlaylist(false)}
+            onClick={handlePlaylistToggle}
             style={{
               position: 'fixed',
               inset: 0,
