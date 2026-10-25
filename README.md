@@ -127,7 +127,7 @@ Edit the component files to update:
 
 - **Email**: oubaidazzedine00@gmail.com
 - **Phone**: +212 631 721 359
-- **GitHub**: https://github.com/alexforc2244
+- **GitHub**: https://github.com/alexforc2004
 - **LinkedIn**: https://www.linkedin.com/in/azzedine-oubaid-64a3673a8
 
 ## License
