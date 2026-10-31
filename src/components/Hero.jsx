@@ -116,7 +116,7 @@ function Hero({ isPlaying = false, theme = 'cyber' }) {
           }}>
             21 Years Old | Full Stack Developer | IT Specialist | 
             <span style={{ color: theme === 'cyber' ? '#ff0033' : '#3b82f6' }}>
-              {theme === 'cyber' ? ' Cybersecurity Expert' : ' Web Development Expert'}
+              {theme === 'cyber' ? ' Cybersecurity Agent' : ' Web Developer Full Stack'}
             </span>
           </p>
 
