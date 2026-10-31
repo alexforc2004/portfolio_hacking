@@ -124,7 +124,7 @@ function CyberSecurity({ theme = 'cyber' }) {
           WebkitTextFillColor: 'transparent'
         }}
       >
-        {theme === 'cyber' ? 'CYBERSECURITY EXPERTISE' : 'WEB DEVELOPMENT EXPERTISE'}
+        {theme === 'cyber' ? 'CYBERSECURITY AGENT' : 'WEB DEVELOPER'}
       </motion.h2>
 
       <motion.p
